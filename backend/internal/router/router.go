@@ -29,7 +29,7 @@ func SetupRouter(db *gorm.DB, authCfg config.AuthConfig) *gin.Engine {
 	attendanceService := attendance.NewService(attendanceRepo)
 	attendanceHandler := attendance.NewHandler(attendanceService)
 
-	api := r.Group("/api")
+	api := r.Group("/api/v1")
 	{
 		api.POST("/register", userHandler.Register)
 		api.POST("/login", userHandler.Login)
