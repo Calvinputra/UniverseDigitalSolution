@@ -17,6 +17,7 @@ func NewHandler(service Service) *Handler {
 }
 
 func (h *Handler) GetEvents(c *gin.Context) {
+
 	events, err := h.service.FindAll(c.Request.Context())
 	if err != nil {
 		response.Fail(c, http.StatusInternalServerError, "failed to fetch events", err.Error())
