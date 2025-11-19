@@ -1,10 +1,6 @@
 package router
 
 import (
-
-	"strings"
-	"time"
-
 	"backend/internal/attendance"
 	"backend/internal/config"
 	"backend/internal/event"
@@ -35,40 +31,6 @@ func SetupRouter(db *gorm.DB, authCfg config.AuthConfig) *gin.Engine {
 
 	api := r.Group("/api/v1")
 	{
-
-		r.Use(cors.New(cors.Config{
-				AllowOrigins: []string{
-					"http://localhost:5173",
-					"http://72.61.208.85:8080",
-				},
-				AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-				AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-				ExposeHeaders:    []string{"Content-Length"},
-				AllowCredentials: true,
-				MaxAge:           12 * time.Hour,
-			}))
-
-			frontendDir := "/root/UniverseDigitalSolution/frontend/dist"
-
-			r.Static("/assets", frontendDir+"/assets")
-
-			r.GET("/", func(c *gin.Context) {
-				c.File(frontendDir + "/index.html")
-			})
-
-			r.NoRoute(func(c *gin.Context) {
-				path := c.Request.URL.Path
-
-				if strings.HasPrefix(path, "/api/") {
-					c.JSON(404, gin.H{"message": "not found"})
-					return
-				}
-
-				c.File(frontendDir + "/index.html")
-			})
-
-			return r
-		}
 		api.POST("/register", userHandler.Register)
 		api.POST("/login", userHandler.Login)
 		api.GET("/events", eventHandler.GetEvents)
