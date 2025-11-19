@@ -29,15 +29,13 @@ func SetupRouter(db *gorm.DB, authCfg config.AuthConfig) *gin.Engine {
 	attendanceService := attendance.NewService(attendanceRepo)
 	attendanceHandler := attendance.NewHandler(attendanceService)
 
-	api := r.Group("/api/v1")
+	api := r.Group("/api")
 	{
-		// PUBLIC
 		api.POST("/register", userHandler.Register)
 		api.POST("/login", userHandler.Login)
 		api.GET("/events", eventHandler.GetEvents)
 		api.GET("/events/:id", eventHandler.GetEventDetail)
 
-		// PROTECTED
 		auth := api.Group("/")
 		auth.Use(middleware.AuthRequired(jwtManager))
 		{
