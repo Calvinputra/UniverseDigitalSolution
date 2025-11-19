@@ -9,11 +9,23 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+
+	"github.com/gin-contrib/cors"
+    "time"  
 )
 
 func SetupRouter(db *gorm.DB, authCfg config.AuthConfig) *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
+
+	r.Use(cors.New(cors.Config{
+        AllowOrigins:     []string{"http://72.61.208.85:3001"},
+        AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+        AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+        ExposeHeaders:    []string{"Content-Length"},
+        AllowCredentials: true,
+        MaxAge:           12 * time.Hour,
+    }))
 
 	jwtManager := user.NewJWTManager(authCfg)
 
