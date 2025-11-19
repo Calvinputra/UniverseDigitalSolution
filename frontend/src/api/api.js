@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-});
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
-export default api;
+export const register = async (data) => {
+  return axios.post(`${API_URL}/register`, data);
+};
