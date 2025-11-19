@@ -1,0 +1,18 @@
+package attendance
+
+import (
+    "time"
+    "backend/internal/user"
+)
+
+type Attendance struct {
+    ID           int64     `gorm:"primaryKey;autoIncrement" json:"id"`
+    EventID      int64     `json:"event_id"`
+    UserID       int64     `json:"user_id"`
+    FullName     string    `json:"full_name"`
+    Email        string    `json:"email"`
+    Status       string    `json:"status"`
+    RegisteredAt time.Time `gorm:"autoCreateTime" json:"registered_at"`
+
+    User user.User `gorm:"foreignKey:UserID" json:"user"`
+}
