@@ -1,22 +1,27 @@
 package main
 
 import (
-    "backend/internal/event"
-    "backend/internal/user"
-    "backend/internal/attendance"
+	"log"
 
+	"backend/internal/config"
+	"backend/internal/migrate"
+	"backend/internal/router"
 )
 
 func main() {
-    db := config.InitDB()
+	db, err := config.NewDB()
+	if err != nil {
+		log.Fatalf("failed to connect database: %v", err)
+	}
 
-    db.AutoMigrate(
-        &user.User{},
-        &user.Role{},
-        &event.Event{},
-        &attendance.Attendance{},
-    )
+	if err := migrate.AutoMigrate(db); err != nil {
+		log.Fatalf("failed to migrate: %v", err)
+	}
 
-    r := router.SetupRouter(db)
-    r.Run(":8080")
+	authCfg := config.LoadAuthConfig()
+
+	r := router.SetupRouter(db, authCfg)
+	if err := r.Run(":8080"); err != nil {
+		log.Fatalf("failed to run server: %v", err)
+	}
 }

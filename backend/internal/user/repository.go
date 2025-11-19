@@ -1,33 +1,37 @@
 package user
 
-import "gorm.io/gorm"
+import (
+	"context"
+
+	"gorm.io/gorm"
+)
 
 type Repository interface {
-    Create(user *User) error
-    FindByEmail(email string) (*User, error)
-    FindByID(id uint) (*User, error)
+	Create(ctx context.Context, user *User) error
+	FindByEmail(ctx context.Context, email string) (*User, error)
+	FindByID(ctx context.Context, id int64) (*User, error)
 }
 
 type repository struct {
-    db *gorm.DB
+	db *gorm.DB
 }
 
 func NewRepository(db *gorm.DB) Repository {
-    return &repository{db}
+	return &repository{db}
 }
 
-func (repo *repository) Create(user *User) error {
-    return repo.db.Create(user).Error
+func (r *repository) Create(ctx context.Context, user *User) error {
+	return r.db.WithContext(ctx).Create(user).Error
 }
 
-func (repo *repository) FindByEmail(email string) (*User, error) {
-    var user User
-    err := repo.db.Where("email = ?", email).First(&user).Error
-    return &user, err
+func (r *repository) FindByEmail(ctx context.Context, email string) (*User, error) {
+	var user User
+	err := r.db.WithContext(ctx).Where("email = ?", email).First(&user).Error
+	return &user, err
 }
 
-func (repo *repository) FindByID(id uint) (*User, error) {
-    var user User
-    err := repo.db.First(&user, id).Error
-    return &user, err
+func (r *repository) FindByID(ctx context.Context, id int64) (*User, error) {
+	var user User
+	err := r.db.WithContext(ctx).First(&user, id).Error
+	return &user, err
 }

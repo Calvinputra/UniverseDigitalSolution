@@ -1,13 +1,17 @@
 package event
 
-import "gorm.io/gorm"
+import (
+	"context"
+
+	"gorm.io/gorm"
+)
 
 type Repository interface {
-	FindAll() ([]Event, error)
-	FindByID(id int64) (*Event, error)
-	Create(e *Event) error
-	Update(e *Event) error
-	Delete(id int64) error
+	FindAll(ctx context.Context) ([]Event, error)
+	FindByID(ctx context.Context, id int64) (*Event, error)
+	Create(ctx context.Context, e *Event) error
+	Update(ctx context.Context, e *Event) error
+	Delete(ctx context.Context, id int64) error
 }
 
 type repository struct {
@@ -18,17 +22,21 @@ func NewRepository(db *gorm.DB) Repository {
 	return &repository{db: db}
 }
 
-func (repo *repository) FindAll() ([]Event, error) {
+func (r *repository) FindAll(ctx context.Context) ([]Event, error) {
 	var events []Event
-	err := repo.db.Preload("Creator").
+	err := r.db.
+		WithContext(ctx).
+		Preload("Creator").
 		Order("start_time ASC").
 		Find(&events).Error
 	return events, err
 }
 
-func (repo *repository) FindByID(id int64) (*Event, error) {
+func (r *repository) FindByID(ctx context.Context, id int64) (*Event, error) {
 	var event Event
-	err := repo.db.Preload("Creator").
+	err := r.db.
+		WithContext(ctx).
+		Preload("Creator").
 		First(&event, id).Error
 	if err != nil {
 		return nil, err
@@ -36,14 +44,14 @@ func (repo *repository) FindByID(id int64) (*Event, error) {
 	return &event, nil
 }
 
-func (repo *repository) Create(e *Event) error {
-	return repo.db.Create(e).Error
+func (r *repository) Create(ctx context.Context, e *Event) error {
+	return r.db.WithContext(ctx).Create(e).Error
 }
 
-func (repo *repository) Update(e *Event) error {
-	return repo.db.Save(e).Error
+func (r *repository) Update(ctx context.Context, e *Event) error {
+	return r.db.WithContext(ctx).Save(e).Error
 }
 
-func (repo *repository) Delete(id int64) error {
-	return repo.db.Delete(&Event{}, id).Error
+func (r *repository) Delete(ctx context.Context, id int64) error {
+	return r.db.WithContext(ctx).Delete(&Event{}, id).Error
 }
