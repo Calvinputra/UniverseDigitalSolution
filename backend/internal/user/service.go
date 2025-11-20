@@ -35,9 +35,6 @@ type LoginInput struct {
 func (s *service) Register(ctx context.Context, input RegisterInput) (*User, error) {
     existing, err := s.repo.FindByEmail(ctx, input.Email)
     if err != nil {
-        // kalau FindByEmail return error “not found”, abaikan
-        // kalau error lain (DB down dsb), balikin ke atas
-        // sesuaikan dengan implementasi repo kamu
     }
     if existing != nil && existing.ID != 0 {
         return nil, ErrEmailAlreadyInUse

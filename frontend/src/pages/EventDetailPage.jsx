@@ -61,7 +61,6 @@ export function EventDetailPage() {
     const end = event.end_time ? formatDateTime(event.end_time) : null;
 
     if (end && start.slice(0, 11) === end.slice(0, 11)) {
-      // kalau tanggal sama, tampilkan "12 Jan 2026, 19:00 - 21:00"
       return `${start} - ${end.slice(-5)}`;
     }
 
@@ -161,7 +160,6 @@ const handleSubmit = async (e) => {
       }}
     >
       <div style={{ width: "100%", maxWidth: 1100 }}>
-        {/* HEADER ATAS: TITLE + BACK BUTTON */}
         <div
           style={{
             display: "flex",
@@ -196,7 +194,6 @@ const handleSubmit = async (e) => {
           </button>
         </div>
 
-        {/* 2 KOLUM: DETAIL KIRI, FORM KANAN */}
         <div
           style={{
             display: "grid",
@@ -204,9 +201,7 @@ const handleSubmit = async (e) => {
             gap: 24,
           }}
         >
-          {/* KIRI: DETAIL EVENT */}
           <div>
-            {/* Judul Event */}
             <div
               style={{
                 borderRadius: 12,
@@ -228,7 +223,6 @@ const handleSubmit = async (e) => {
               </h2>
             </div>
 
-            {/* Date/Location/Quota + OPEN badge */}
             <div
               style={{
                 borderRadius: 12,
@@ -238,7 +232,6 @@ const handleSubmit = async (e) => {
                 marginBottom: 16,
               }}
             >
-              {/* Bar atas: Date & Time + badge */}
               <div
                 style={{
                   display: "flex",
@@ -308,7 +301,6 @@ const handleSubmit = async (e) => {
               </div>
             </div>
 
-            {/* Description box */}
             <div
               style={{
                 marginBottom: 16,
@@ -346,7 +338,6 @@ const handleSubmit = async (e) => {
               </div>
             </div>
 
-            {/* Attendees list */}
             <div>
               <div
                 style={{
@@ -390,7 +381,6 @@ const handleSubmit = async (e) => {
             </div>
           </div>
 
-          {/* KANAN: FORM REGISTER */}
           <div>
             <div
               style={{

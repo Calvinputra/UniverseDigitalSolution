@@ -15,9 +15,6 @@ import (
 )
 
 func SetupRouter(db *gorm.DB, authCfg config.AuthConfig) *gin.Engine {
-	// Prod
-	// r := gin.New()
-	// Development
 	r := gin.Default()
 	r.Use(gin.Logger(), gin.Recovery())
 

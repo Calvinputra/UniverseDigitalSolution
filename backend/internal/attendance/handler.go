@@ -1,4 +1,3 @@
-// backend/internal/attendance/handler.go
 package attendance
 
 import (

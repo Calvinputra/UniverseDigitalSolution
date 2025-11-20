@@ -70,7 +70,6 @@ export function EventFormPage() {
           padding: 20,
         }}
       >
-        {/* HEADER */}
         <div
           style={{
             display: "flex",
@@ -107,7 +106,6 @@ export function EventFormPage() {
           </Link>
         </div>
 
-        {/* FORM */}
         <div
           style={{
             borderRadius: 10,
@@ -132,7 +130,6 @@ export function EventFormPage() {
           {error && <p style={{ color: "#fecaca" }}>{error}</p>}
 
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {/* Title */}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               <label style={{ color: "#e5e7eb" }}>Title</label>
               <input
@@ -150,7 +147,6 @@ export function EventFormPage() {
               />
             </div>
 
-            {/* Description */}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               <label style={{ color: "#e5e7eb" }}>Description</label>
               <textarea
@@ -168,7 +164,6 @@ export function EventFormPage() {
               />
             </div>
 
-            {/* Location */}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               <label style={{ color: "#e5e7eb" }}>Location</label>
               <input
@@ -185,7 +180,6 @@ export function EventFormPage() {
               />
             </div>
 
-            {/* Quota */}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               <label style={{ color: "#e5e7eb" }}>Quota</label>
               <input
@@ -204,7 +198,6 @@ export function EventFormPage() {
               />
             </div>
 
-            {/* DateTime */}
             <div
               style={{
                 display: "grid",
@@ -249,7 +242,6 @@ export function EventFormPage() {
               </div>
             </div>
 
-            {/* Submit */}
             <button
               disabled={loading}
               type="submit"

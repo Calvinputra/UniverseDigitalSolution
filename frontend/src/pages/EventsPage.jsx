@@ -23,10 +23,9 @@ export function EventsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // === FILTER & SORT STATE ===
-  const [statusFilter, setStatusFilter] = useState("upcoming"); // "upcoming" | "past" | "all"
+  const [statusFilter, setStatusFilter] = useState("upcoming");
   const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState("start_asc"); // "start_asc" | "start_desc" | "title_asc"
+  const [sortBy, setSortBy] = useState("start_asc"); 
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -49,10 +48,8 @@ export function EventsPage() {
     const now = new Date();
 
     const filtered = events.filter((ev) => {
-      // FILTER SEARCH
       const matchesSearch = !search || (ev.title && ev.title.toLowerCase().includes(search.toLowerCase())) || (ev.location && ev.location.toLowerCase().includes(search.toLowerCase()));
 
-      // FILTER STATUS (UPCOMING / PAST / ALL)
       let matchesStatus = true;
       if (ev.start_time) {
         const start = new Date(ev.start_time);
@@ -62,14 +59,13 @@ export function EventsPage() {
         } else if (statusFilter === "past") {
           matchesStatus = start < now;
         } else {
-          matchesStatus = true; // "all"
+          matchesStatus = true; 
         }
       }
 
       return matchesSearch && matchesStatus;
     });
 
-    // SORT
     const sorted = [...filtered].sort((a, b) => {
       const aStart = a.start_time ? new Date(a.start_time).getTime() : 0;
       const bStart = b.start_time ? new Date(b.start_time).getTime() : 0;
@@ -105,7 +101,6 @@ export function EventsPage() {
       }}
     >
       <div style={{ width: "100%", maxWidth: 960 }}>
-        {/* HEADER */}
         <div
           style={{
             display: "flex",
@@ -184,7 +179,6 @@ export function EventsPage() {
           </div>
         </div>
 
-        {/* FILTER BAR: TAB STATUS + SEARCH + SORT */}
         <div
           style={{
             display: "flex",
@@ -194,7 +188,6 @@ export function EventsPage() {
             marginBottom: 20,
           }}
         >
-          {/* TAB STATUS */}
           <div
             style={{
               display: "inline-flex",
@@ -231,7 +224,6 @@ export function EventsPage() {
             })}
           </div>
 
-          {/* SEARCH */}
           <input
             type="text"
             placeholder="Cari judul atau lokasi..."
@@ -249,7 +241,6 @@ export function EventsPage() {
             }}
           />
 
-          {/* SORT SELECT */}
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
@@ -268,12 +259,10 @@ export function EventsPage() {
           </select>
         </div>
 
-        {/* LOADING / ERROR */}
         {loading && <p style={{ color: "#9ca3af" }}>Memuat event...</p>}
         {error && <p style={{ color: "#f87171" }}>{error}</p>}
         {!loading && !error && filteredEvents.length === 0 && <p style={{ color: "#9ca3af" }}>Belum ada event.</p>}
 
-        {/* EVENT LIST */}
         {filteredEvents.map((ev) => {
           const attendees = ev.attendees_count ?? 0;
           const quota = ev.quota ?? null;

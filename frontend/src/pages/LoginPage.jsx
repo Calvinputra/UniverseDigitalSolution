@@ -35,7 +35,6 @@ export function LoginPage() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        {/* Pesan dari redirect (misalnya dari /events/new) */}
         {message && (
           <div
             style={{
