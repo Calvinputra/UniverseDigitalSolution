@@ -23,27 +23,41 @@ func NewRepository(db *gorm.DB) Repository {
 }
 
 func (r *repository) FindAll(ctx context.Context) ([]Event, error) {
-	var events []Event
-	err := r.db.
-		WithContext(ctx).
-		Preload("Creator").
-		Order("start_time ASC").
-		Find(&events).Error
-	return events, err
-}
+    var events []Event
 
+    err := r.db.
+        WithContext(ctx).
+        Model(&Event{}).
+        Select("events.*, COUNT(attendances.id) AS attendees_count").
+        Joins("LEFT JOIN attendances ON attendances.event_id = events.id").
+        Group("events.id").
+        Preload("Creator").
+        Order("events.start_time ASC").
+        Find(&events).Error
+
+    return events, err
+}
 
 func (r *repository) FindByID(ctx context.Context, id int64) (*Event, error) {
-	var event Event
-	err := r.db.
-		WithContext(ctx).
-		Preload("Creator").
-		First(&event, id).Error
-	if err != nil {
-		return nil, err
-	}
-	return &event, nil
+    var event Event
+
+    err := r.db.
+        WithContext(ctx).
+        Model(&Event{}).
+        Select(`
+            events.*,
+            (SELECT COUNT(*) FROM attendances WHERE attendances.event_id = events.id) AS attendees_count
+        `).
+        Where("events.id = ?", id).
+        Preload("Creator").
+        First(&event).Error
+
+    if err != nil {
+        return nil, err
+    }
+    return &event, nil
 }
+
 
 func (r *repository) Create(ctx context.Context, e *Event) error {
 	return r.db.WithContext(ctx).Create(e).Error
