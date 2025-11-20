@@ -19,7 +19,7 @@ export function LoginPage() {
       await login(form.email, form.password);
       navigate("/events");
     } catch (err) {
-      setError(err.message || "Login gagal");
+      setError(err.message("Login gagal"));
     }
   };
 

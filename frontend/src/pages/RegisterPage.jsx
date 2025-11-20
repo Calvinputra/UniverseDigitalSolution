@@ -27,7 +27,7 @@ export function RegisterPage() {
       setSuccess("Register berhasil, silakan login.");
       setTimeout(() => navigate("/login"), 1000);
     } catch (err) {
-      setError(err.message || "Register gagal");
+      setError(err.message("Register gagal"));
     }
   };
 
