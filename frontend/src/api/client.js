@@ -31,14 +31,14 @@ async function request(path, options = {}) {
 
 export const api = {
   login(payload) {
-    return request("/auth/login", {
+    return request("/login", {
       method: "POST",
       body: JSON.stringify(payload),
     });
   },
 
   register(payload) {
-    return request("/auth/register", {
+    return request("/register", {
       method: "POST",
       body: JSON.stringify(payload),
     });
