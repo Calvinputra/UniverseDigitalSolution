@@ -2,7 +2,6 @@ package user
 
 import (
 	"net/http"
-
 	"backend/pkg/response"
 	"github.com/gin-gonic/gin"
 )
@@ -51,3 +50,4 @@ func (h *Handler) Login(c *gin.Context) {
 		"user":  user,
 	})
 }
+

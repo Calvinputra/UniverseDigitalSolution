@@ -20,9 +20,11 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setError("");
     try {
-      const data = await api.login({ email, password });
-
-      const { token: jwtToken, user: userData } = data;
+      // const data = await api.login({ email, password });
+      const res = await api.login({ email, password });
+      
+      const { token: jwtToken, user: userData } = res.data || {};
+      // const { token: jwtToken, user: userData } = data;
 
       if (!jwtToken) {
         throw new Error("Token tidak ditemukan di response");

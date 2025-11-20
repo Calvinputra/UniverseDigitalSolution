@@ -5,6 +5,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { EventsPage } from "./pages/EventsPage";
 import { EventFormPage } from "./pages/EventFormPage";
+import { EventDetailPage } from "./pages/EventDetailPage";
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/events" replace />} />
+
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
 
@@ -23,6 +25,16 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/events/:id"
+            element={
+              <ProtectedRoute>
+                <EventDetailPage />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/events/new"
             element={
@@ -31,6 +43,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/events/:id/edit"
             element={
