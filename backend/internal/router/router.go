@@ -22,8 +22,10 @@ func SetupRouter(db *gorm.DB, authCfg config.AuthConfig) *gin.Engine {
 	r.Use(gin.Logger(), gin.Recovery())
 
 	r.Use(cors.New(cors.Config{
-		// AllowOrigins:     []string{"http://localhost:5173"},
-        AllowOrigins:     []string{"http://72.61.208.85:3001"},
+		AllowOrigins: []string{
+			"http://localhost:5173",
+			"http://72.61.208.85",
+		},
         AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
         AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
         ExposeHeaders:    []string{"Content-Length"},
