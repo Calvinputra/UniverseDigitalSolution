@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { api } from "../api/client";
+import { useAuth } from "../context/AuthContext";
 
 export function EventFormPage() {
-  const { id } = useParams();
-  const isEdit = Boolean(id);
   const navigate = useNavigate();
+  const { isGuest } = useAuth();
 
   const [form, setForm] = useState({
     title: "",
@@ -15,36 +15,15 @@ export function EventFormPage() {
     start_time: "",
     end_time: "",
   });
+
   const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(isEdit);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!isEdit) return;
-
-    const fetchEvent = async () => {
-      setInitialLoading(true);
-      setError("");
-      try {
-        const res = await api.getEvent(id);
-        const ev = res.data || {};
-        setForm({
-          title: ev.title || "",
-          description: ev.description || "",
-          location: ev.location || "",
-          quota: ev.quota ?? "",
-          start_time: ev.start_time || "",
-          end_time: ev.end_time || "",
-        });
-      } catch (err) {
-        setError(err.message || "Gagal memuat event");
-      } finally {
-        setInitialLoading(false);
-      }
-    };
-
-    fetchEvent();
-  }, [id, isEdit]);
+  if (isGuest) {
+    navigate("/login", {
+      state: { message: "Silakan login terlebih dahulu untuk membuat event." },
+    });
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,22 +41,14 @@ export function EventFormPage() {
     };
 
     try {
-      if (isEdit) {
-        await api.updateEvent(id, payload);
-      } else {
-        await api.createEvent(payload);
-      }
+      await api.createEvent(payload); 
       navigate("/events");
     } catch (err) {
-      setError(err.message || "Gagal menyimpan event");
+      setError(err.message || "Gagal membuat event");
     } finally {
       setLoading(false);
     }
   };
-
-  if (initialLoading) {
-    return <p style={{ padding: 24 }}>Memuat...</p>;
-  }
 
   return (
     <div
@@ -96,16 +67,14 @@ export function EventFormPage() {
           backgroundImage: "repeating-linear-gradient(0deg, #0f172a 0, #0f172a 1px, #020617 1px, #020617 24px), repeating-linear-gradient(90deg, #0f172a 0, #0f172a 1px, #020617 1px, #020617 24px)",
           borderRadius: 16,
           border: "1px solid #1f2937",
-          boxShadow: "0 18px 45px rgba(0,0,0,0.7)",
           padding: 20,
-          justifyContent: "center",
         }}
       >
+        {/* HEADER */}
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
             marginBottom: 16,
             borderBottom: "1px solid #4b5563",
             paddingBottom: 10,
@@ -119,7 +88,6 @@ export function EventFormPage() {
               background: "#020617",
               color: "#e5e7eb",
               fontWeight: 600,
-              fontSize: 14,
             }}
           >
             Event Manager
@@ -131,9 +99,7 @@ export function EventFormPage() {
               padding: "6px 14px",
               borderRadius: 999,
               border: "1px solid #e5e7eb",
-              background: "#020617",
               color: "#e5e7eb",
-              fontSize: 13,
               textDecoration: "none",
             }}
           >
@@ -141,6 +107,7 @@ export function EventFormPage() {
           </Link>
         </div>
 
+        {/* FORM */}
         <div
           style={{
             borderRadius: 10,
@@ -154,29 +121,20 @@ export function EventFormPage() {
               padding: "6px 10px",
               borderRadius: 6,
               border: "1px solid #e5e7eb",
-              display: "inline-block",
               marginBottom: 14,
-              fontSize: 14,
               fontWeight: 600,
               color: "#e5e7eb",
             }}
           >
-            {isEdit ? "Edit Event" : "Form New Event"}
+            Create New Event
           </div>
 
-          {error && <p style={{ color: "#fecaca", marginBottom: 10 }}>{error}</p>}
+          {error && <p style={{ color: "#fecaca" }}>{error}</p>}
 
-          <form
-            onSubmit={handleSubmit}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 12,
-              maxWidth: 640,
-            }}
-          >
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {/* Title */}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ color: "#e5e7eb", fontSize: 13 }}>Title</label>
+              <label style={{ color: "#e5e7eb" }}>Title</label>
               <input
                 name="title"
                 value={form.title}
@@ -186,15 +144,15 @@ export function EventFormPage() {
                   borderRadius: 6,
                   border: "1px solid #e5e7eb",
                   padding: "8px 10px",
-                  fontSize: 14,
                   background: "#020617",
                   color: "#e5e7eb",
                 }}
               />
             </div>
 
+            {/* Description */}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ color: "#e5e7eb", fontSize: 13 }}>Description</label>
+              <label style={{ color: "#e5e7eb" }}>Description</label>
               <textarea
                 name="description"
                 rows={4}
@@ -204,16 +162,15 @@ export function EventFormPage() {
                   borderRadius: 6,
                   border: "1px solid #e5e7eb",
                   padding: "8px 10px",
-                  fontSize: 14,
                   background: "#020617",
                   color: "#e5e7eb",
-                  resize: "vertical",
                 }}
               />
             </div>
 
+            {/* Location */}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ color: "#e5e7eb", fontSize: 13 }}>Location</label>
+              <label style={{ color: "#e5e7eb" }}>Location</label>
               <input
                 name="location"
                 value={form.location}
@@ -222,15 +179,15 @@ export function EventFormPage() {
                   borderRadius: 6,
                   border: "1px solid #e5e7eb",
                   padding: "8px 10px",
-                  fontSize: 14,
                   background: "#020617",
                   color: "#e5e7eb",
                 }}
               />
             </div>
 
+            {/* Quota */}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ color: "#e5e7eb", fontSize: 13 }}>Quota</label>
+              <label style={{ color: "#e5e7eb" }}>Quota</label>
               <input
                 name="quota"
                 type="number"
@@ -241,22 +198,22 @@ export function EventFormPage() {
                   borderRadius: 6,
                   border: "1px solid #e5e7eb",
                   padding: "8px 10px",
-                  fontSize: 14,
                   background: "#020617",
                   color: "#e5e7eb",
                 }}
               />
             </div>
 
+            {/* DateTime */}
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                gridTemplateColumns: "repeat(2, 1fr)",
                 gap: 12,
               }}
             >
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ color: "#e5e7eb", fontSize: 13 }}>Start time</label>
+                <label style={{ color: "#e5e7eb" }}>Start time</label>
                 <input
                   type="datetime-local"
                   name="start_time"
@@ -267,7 +224,6 @@ export function EventFormPage() {
                     borderRadius: 6,
                     border: "1px solid #e5e7eb",
                     padding: "8px 10px",
-                    fontSize: 14,
                     background: "#020617",
                     color: "#e5e7eb",
                   }}
@@ -275,7 +231,7 @@ export function EventFormPage() {
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <label style={{ color: "#e5e7eb", fontSize: 13 }}>End time</label>
+                <label style={{ color: "#e5e7eb" }}>End time</label>
                 <input
                   type="datetime-local"
                   name="end_time"
@@ -286,7 +242,6 @@ export function EventFormPage() {
                     borderRadius: 6,
                     border: "1px solid #e5e7eb",
                     padding: "8px 10px",
-                    fontSize: 14,
                     background: "#020617",
                     color: "#e5e7eb",
                   }}
@@ -294,25 +249,21 @@ export function EventFormPage() {
               </div>
             </div>
 
-            <div style={{ marginTop: 10 }}>
-              <button
-                disabled={loading}
-                type="submit"
-                style={{
-                  padding: "9px 18px",
-                  borderRadius: 999,
-                  border: "1px solid #e5e7eb",
-                  background: "#111827",
-                  color: "#e5e7eb",
-                  fontSize: 14,
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  minWidth: 120,
-                }}
-              >
-                {loading ? "Menyimpan..." : isEdit ? "Simpan Event" : "Create Event"}
-              </button>
-            </div>
+            {/* Submit */}
+            <button
+              disabled={loading}
+              type="submit"
+              style={{
+                marginTop: 10,
+                padding: "9px 18px",
+                borderRadius: 999,
+                border: "1px solid #e5e7eb",
+                background: "#111827",
+                color: "#e5e7eb",
+              }}
+            >
+              {loading ? "Membuat..." : "Create Event"}
+            </button>
           </form>
         </div>
       </div>

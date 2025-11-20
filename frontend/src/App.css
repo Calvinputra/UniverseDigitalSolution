@@ -29,6 +29,7 @@ body {
   background: radial-gradient(circle at top, #111827, #020617 55%);
   color: var(--text);
   justify-content: center;
+  height: auto;
 }
 
 .auth-page {

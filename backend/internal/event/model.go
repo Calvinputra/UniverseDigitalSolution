@@ -17,5 +17,7 @@ type Event struct {
 	CreatedBy int64     `json:"created_by"`
 	Creator   user.User `gorm:"foreignKey:CreatedBy" json:"creator,omitempty"`
 
+	AttendeesCount int `json:"attendees_count" gorm:"column:attendees_count"`
+
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 }

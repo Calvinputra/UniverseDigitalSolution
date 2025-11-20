@@ -1,9 +1,9 @@
 package event
 
 import (
+	"backend/internal/common"
 	"context"
 	"errors"
-	"time"
 )
 
 type Service interface {
@@ -26,8 +26,8 @@ type CreateEventInput struct {
 	Description string    `json:"description"`
 	Location    string    `json:"location"`
 	Quota       int       `json:"quota"`
-	StartTime   time.Time `json:"start_time"`
-	EndTime     time.Time `json:"end_time"`
+	StartTime   common.CustomTime `json:"start_time"`
+	EndTime     common.CustomTime `json:"end_time"`
 }
 
 func (s *service) FindAll(ctx context.Context) ([]Event, error) {
@@ -44,8 +44,8 @@ func (s *service) Create(ctx context.Context, input CreateEventInput, userID int
 		Description: input.Description,
 		Location:    input.Location,
 		Quota:       input.Quota,
-		StartTime:   input.StartTime,
-		EndTime:     input.EndTime,
+		StartTime:   input.StartTime.Time,
+		EndTime:     input.EndTime.Time,
 		CreatedBy:   userID,
 	}
 

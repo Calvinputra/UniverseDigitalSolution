@@ -19,8 +19,6 @@ func SetupRouter(db *gorm.DB, authCfg config.AuthConfig) *gin.Engine {
 	// r := gin.New()
 	// Development
 	r := gin.Default()
-    r.Use(cors.Default())
-
 	r.Use(gin.Logger(), gin.Recovery())
 
 	r.Use(cors.New(cors.Config{
@@ -53,17 +51,17 @@ func SetupRouter(db *gorm.DB, authCfg config.AuthConfig) *gin.Engine {
 		api.POST("/login", userHandler.Login)
 		api.GET("/events", eventHandler.GetEvents)
 		api.GET("/events/:id", eventHandler.GetEventDetail)
+		api.POST("/events/:id/attend", attendanceHandler.Attend)
+		api.GET("/events/:id/attendances", attendanceHandler.ListByEvent)
 
 		auth := api.Group("/")
 		auth.Use(middleware.AuthRequired(jwtManager))
 		{
 			auth.POST("/events", eventHandler.CreateEvent)
-			auth.DELETE("/events/:id", eventHandler.DeleteEvent)
-
-			auth.POST("/events/:id/attend", attendanceHandler.Attend)
-			auth.GET("/events/:id/attendances", attendanceHandler.ListByEvent)
+		    auth.POST("/events/new", eventHandler.CreateEvent)   
 		}
 	}
+
 
 	return r
 }

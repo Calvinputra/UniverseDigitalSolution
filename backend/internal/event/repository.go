@@ -32,6 +32,7 @@ func (r *repository) FindAll(ctx context.Context) ([]Event, error) {
 	return events, err
 }
 
+
 func (r *repository) FindByID(ctx context.Context, id int64) (*Event, error) {
 	var event Event
 	err := r.db.

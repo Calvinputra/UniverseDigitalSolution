@@ -1,11 +1,13 @@
 package event
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
 	"backend/pkg/response"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
@@ -17,15 +19,15 @@ func NewHandler(service Service) *Handler {
 }
 
 func (h *Handler) GetEvents(c *gin.Context) {
+    events, err := h.service.FindAll(c.Request.Context())
+    if err != nil {
+        response.Fail(c, http.StatusInternalServerError, "failed to fetch events", err.Error())
+        return
+    }
 
-	events, err := h.service.FindAll(c.Request.Context())
-	if err != nil {
-		response.Fail(c, http.StatusInternalServerError, "failed to fetch events", err.Error())
-		return
-	}
-
-	response.Success(c, http.StatusOK, events)
+    response.Success(c, http.StatusOK, events)
 }
+
 
 func (h *Handler) GetEventDetail(c *gin.Context) {
 	idStr := c.Param("id")
@@ -47,6 +49,8 @@ func (h *Handler) GetEventDetail(c *gin.Context) {
 func (h *Handler) CreateEvent(c *gin.Context) {
 	var input CreateEventInput
 	if err := c.ShouldBindJSON(&input); err != nil {
+		log.Printf("Error binding JSON: %+v", err)
+
 		response.Fail(c, http.StatusBadRequest, "invalid request body", err.Error())
 		return
 	}

@@ -73,9 +73,10 @@ export const api = {
     });
   },
 
-  attendEvent(id) {
+  attendEvent(id, payload) {
     return request(`/events/${id}/attend`, {
       method: "POST",
+      body: JSON.stringify(payload),
     });
   },
 

@@ -6,9 +6,16 @@ import (
     "backend/internal/config"
     "backend/internal/migrate"
     "backend/internal/router"
+    "github.com/joho/godotenv"
 )
 
 func main() {
+
+    err := godotenv.Load()
+    if err != nil {
+        log.Println("No .env file found")
+    }
+
     db, err := config.NewDB()
     if err != nil {
         log.Fatalf("failed to connect database: %v", err)

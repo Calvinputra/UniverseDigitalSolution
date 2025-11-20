@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom"; // 👈 tambah useLocation
 import { useAuth } from "../context/AuthContext";
 
 export function LoginPage() {
   const { login, loginAsGuest, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation(); // 👈 ambil location dari router
+  const message = location.state?.message; // 👈 pesan dari navigate(..., { state })
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -33,6 +35,22 @@ export function LoginPage() {
   return (
     <div className="auth-page">
       <div className="auth-card">
+        {/* Pesan dari redirect (misalnya dari /events/new) */}
+        {message && (
+          <div
+            style={{
+              background: "#f87171",
+              color: "white",
+              padding: "10px 14px",
+              fontSize: 12,
+              borderRadius: 8,
+              marginBottom: 16,
+            }}
+          >
+            {message}
+          </div>
+        )}
+
         <h1 className="auth-title">Masuk</h1>
         <p className="auth-subtitle">Gunakan email terdaftar untuk masuk.</p>
 
