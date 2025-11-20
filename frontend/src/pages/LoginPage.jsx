@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom"; // 👈 tambah useLocation
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export function LoginPage() {
   const { login, loginAsGuest, loading } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation(); // 👈 ambil location dari router
-  const message = location.state?.message; // 👈 pesan dari navigate(..., { state })
+  const location = useLocation(); 
+  const message = location.state?.message;
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");

@@ -70,27 +70,3 @@ func (h *Handler) CreateEvent(c *gin.Context) {
 
 	response.Success(c, http.StatusCreated, event)
 }
-
-func (h *Handler) DeleteEvent(c *gin.Context) {
-	idStr := c.Param("id")
-	id, err := strconv.ParseInt(idStr, 10, 64)
-	if err != nil {
-		response.Fail(c, http.StatusBadRequest, "invalid event id", err.Error())
-		return
-	}
-
-	userIDValue, ok := c.Get("user_id")
-	if !ok {
-		response.Fail(c, http.StatusUnauthorized, "unauthorized", "missing user id in context")
-		return
-	}
-	userID := userIDValue.(int64)
-
-	err = h.service.Delete(c.Request.Context(), id, userID)
-	if err != nil {
-		response.Fail(c, http.StatusForbidden, "failed to delete", err.Error())
-		return
-	}
-
-	response.Success(c, http.StatusOK, gin.H{"deleted": id})
-}
