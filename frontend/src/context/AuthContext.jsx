@@ -10,30 +10,49 @@ export function AuthProvider({ children }) {
     const raw = localStorage.getItem("user");
     return raw ? JSON.parse(raw) : null;
   });
+  const [isGuest, setIsGuest] = useState(() => localStorage.getItem("is_guest") === "true");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const isAuthenticated = !!token || isGuest;
 
   const login = async (email, password) => {
     setLoading(true);
     setError("");
     try {
       const data = await api.login({ email, password });
-      const { token, user } = data;
 
-      if (!token) {
+      const { token: jwtToken, user: userData } = data;
+
+      if (!jwtToken) {
         throw new Error("Token tidak ditemukan di response");
       }
 
-      setToken(token);
-      setUser(user);
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      setToken(jwtToken);
+      setUser(userData);
+      setIsGuest(false);
+
+      localStorage.setItem("token", jwtToken);
+      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.removeItem("is_guest");
     } catch (err) {
       console.error("Login error:", err);
-      throw err; 
+      throw err;
     } finally {
       setLoading(false);
     }
+  };
+
+  const loginAsGuest = () => {
+    const guestUser = { name: "Guest", role: "guest" };
+
+    setUser(guestUser);
+    setToken(null);
+    setIsGuest(true);
+
+    localStorage.setItem("user", JSON.stringify(guestUser));
+    localStorage.setItem("is_guest", "true");
+    localStorage.removeItem("token");
   };
 
   const register = async (payload) => {
@@ -52,8 +71,10 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setToken(null);
     setUser(null);
+    setIsGuest(false);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("is_guest");
   };
 
   return (
@@ -61,12 +82,14 @@ export function AuthProvider({ children }) {
       value={{
         token,
         user,
+        isGuest,
+        isAuthenticated,
         loading,
         error,
-        isAuthenticated: !!token,
         login,
-        logout,
+        loginAsGuest,
         register,
+        logout,
       }}
     >
       {children}
