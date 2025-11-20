@@ -14,19 +14,20 @@ async function request(path, options = {}) {
     headers,
   });
 
+  let data = null;
+  const contentType = res.headers.get("content-type") || "";
+  const isJson = contentType.includes("application/json");
+
+  if (isJson) {
+    data = await res.json();
+  }
+
   if (!res.ok) {
-    let message = `Request failed with status ${res.status}`;
-    try {
-      const data = await res.json();
-      if (data.message) message = data.message;
-    } catch {
-      // kalau response bukan JSON, abaikan
-    }
+    const message = data?.message || data?.error || `Request failed with status ${res.status}`;
     throw new Error(message);
   }
 
-  if (res.status === 204) return null;
-  return res.json();
+  return data;
 }
 
 export const api = {
@@ -45,11 +46,11 @@ export const api = {
   },
 
   getEvents() {
-    return request("/events", { method: "GET" });
+    return request("/events");
   },
 
   getEvent(id) {
-    return request(`/events/${id}`, { method: "GET" });
+    return request(`/events/${id}`);
   },
 
   createEvent(payload) {
@@ -70,5 +71,15 @@ export const api = {
     return request(`/events/${id}`, {
       method: "DELETE",
     });
+  },
+
+  attendEvent(id) {
+    return request(`/events/${id}/attend`, {
+      method: "POST",
+    });
+  },
+
+  getAttendances(id) {
+    return request(`/events/${id}/attendances`);
   },
 };

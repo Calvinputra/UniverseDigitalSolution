@@ -1,66 +1,77 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export function RegisterPage() {
   const { register, loading } = useAuth();
   const navigate = useNavigate();
+
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
-    role_id: 2, // misalnya 2 = guest
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+
     try {
       await register(form);
-      setSuccess("Register berhasil, silakan login.");
-      setTimeout(() => navigate("/login"), 1000);
+      setSuccess("Pendaftaran berhasil. Silakan login.");
+      setTimeout(() => navigate("/login"), 900);
     } catch (err) {
-      setError(err.message("Register gagal"));
+      setError(err.message || "Pendaftaran gagal");
     }
   };
 
   return (
-    <div className="container">
-      <h1>Register</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
+    <div className="auth-page">
+      <div className="auth-card">
+        <h1 className="auth-title">Daftar</h1>
+        <p className="auth-subtitle">Buat akun baru untuk melanjutkan.</p>
 
-      <form onSubmit={handleSubmit} style={{ maxWidth: 400 }}>
-        <div className="field">
-          <label>Nama</label>
-          <input name="name" value={form.name} onChange={handleChange} required />
-        </div>
+        {error && <div className="auth-alert auth-alert-error">{error}</div>}
+        {success && <div className="auth-alert auth-alert-success">{success}</div>}
 
-        <div className="field">
-          <label>Email</label>
-          <input name="email" type="email" value={form.email} onChange={handleChange} required />
-        </div>
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="auth-field">
+            <label>Nama lengkap</label>
+            <input name="name" type="text" placeholder="Nama kamu" value={form.name} onChange={handleChange} required />
+          </div>
 
-        <div className="field">
-          <label>Password</label>
-          <input name="password" type="password" value={form.password} onChange={handleChange} required />
-        </div>
+          <div className="auth-field">
+            <label>Email</label>
+            <input name="email" type="email" placeholder="kamu@example.com" value={form.email} onChange={handleChange} required />
+          </div>
 
-        <button disabled={loading} type="submit">
-          {loading ? "Loading..." : "Register"}
-        </button>
-      </form>
+          <div className="auth-field">
+            <label>Kata sandi</label>
+            <input name="password" type="password" placeholder="password" value={form.password} onChange={handleChange} required />
+          </div>
 
-      <p>
-        Sudah punya akun? <Link to="/login">Login</Link>
-      </p>
+          <div className="auth-actions">
+            <button className="auth-btn auth-btn-primary" type="submit" disabled={loading}>
+              {loading ? "Memproses..." : "Daftar"}
+            </button>
+          </div>
+        </form>
+
+        <p className="auth-footer-text">
+          Sudah punya akun?{" "}
+          <Link to="/login" className="auth-link">
+            Masuk
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

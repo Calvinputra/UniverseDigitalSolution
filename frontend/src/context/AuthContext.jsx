@@ -20,11 +20,9 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setError("");
     try {
-      // const data = await api.login({ email, password });
-      const res = await api.login({ email, password });
-      
+      const res = await api.login({ email, password }); 
+
       const { token: jwtToken, user: userData } = res.data || {};
-      // const { token: jwtToken, user: userData } = data;
 
       if (!jwtToken) {
         throw new Error("Token tidak ditemukan di response");
@@ -39,6 +37,7 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("is_guest");
     } catch (err) {
       console.error("Login error:", err);
+      setError(err.message || "Login gagal");
       throw err;
     } finally {
       setLoading(false);

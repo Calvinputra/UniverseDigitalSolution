@@ -1,15 +1,17 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export function LoginPage() {
   const { login, loginAsGuest, loading } = useAuth();
   const navigate = useNavigate();
+
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -24,45 +26,45 @@ export function LoginPage() {
   };
 
   const handleGuest = () => {
-    setError("");
     loginAsGuest();
     navigate("/events");
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth-page">
       <div className="auth-card">
-        <h1 className="auth-title">Login</h1>
+        <h1 className="auth-title">Masuk</h1>
+        <p className="auth-subtitle">Gunakan email terdaftar untuk masuk.</p>
 
-        {error && <p className="auth-error">{error}</p>}
+        {error && <div className="auth-alert auth-alert-error">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="field">
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="auth-field">
             <label>Email</label>
-            <input name="email" type="email" value={form.email} onChange={handleChange} required />
+            <input name="email" type="email" placeholder="kamu@example.com" value={form.email} onChange={handleChange} required />
           </div>
 
-          <div className="field">
-            <label>Password</label>
-            <input name="password" type="password" value={form.password} onChange={handleChange} required />
+          <div className="auth-field">
+            <label>Kata sandi</label>
+            <input name="password" type="password" placeholder="••••••••" value={form.password} onChange={handleChange} required />
           </div>
 
-          <button disabled={loading} type="submit" className="btn-primary">
-            {loading ? "Loading..." : "Login"}
-          </button>
+          <div className="auth-actions">
+            <button className="auth-btn auth-btn-primary" type="submit" disabled={loading}>
+              {loading ? "Memproses..." : "Masuk"}
+            </button>
+            <button type="button" className="auth-btn auth-btn-secondary" onClick={handleGuest}>
+              Masuk sebagai tamu
+            </button>
+          </div>
         </form>
 
-        <p className="auth-text">
-          Belum punya akun? <Link to="/register">Register</Link>
+        <p className="auth-footer-text">
+          Belum punya akun?{" "}
+          <Link to="/register" className="auth-link">
+            Daftar
+          </Link>
         </p>
-
-        <div className="auth-divider">
-          <span>atau</span>
-        </div>
-
-        <button type="button" className="btn-ghost" onClick={handleGuest} disabled={loading}>
-          Masuk sebagai Tamu
-        </button>
       </div>
     </div>
   );

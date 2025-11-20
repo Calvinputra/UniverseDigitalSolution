@@ -1,88 +1,107 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api/client";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export function EventsPage() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { logout } = useAuth();
-  const navigate = useNavigate();
+  const [error, setError] = useState("");
 
-  const loadEvents = async () => {
-    setLoading(true);
-    try {
-      const data = await api.getEvents();
-      setEvents(data || []);
-    } catch (err) {
-      console.error(err);
-      if (String(err.message).toLowerCase().includes("unauthorized")) {
-        logout();
-        navigate("/login");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { isGuest } = useAuth(); // <— ambil status guest
 
   useEffect(() => {
-    loadEvents();
+    const fetchEvents = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await api.getEvents();
+        setEvents(res.data || res);
+      } catch (err) {
+        setError(err.message || "Gagal memuat event");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Yakin hapus event ini?")) return;
-    try {
-      await api.deleteEvent(id);
-      setEvents((prev) => prev.filter((e) => e.id !== id));
-    } catch (err) {
-      alert(err.message || "Gagal hapus");
-    }
-  };
-
   return (
-    <div className="container">
-      <header style={{ display: "flex", justifyContent: "space-between" }}>
-        <h1>Events</h1>
-        <div>
-          <button onClick={() => navigate("/events/new")}>+ Event Baru</button>
-          <button onClick={logout} style={{ marginLeft: 8 }}>
-            Logout
-          </button>
-        </div>
-      </header>
+    <div style={{ padding: "32px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 16,
+        }}
+      >
+        <h1 className="title">Event Manager</h1>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : events.length === 0 ? (
-        <p>Belum ada event.</p>
-      ) : (
-        <table border="1" cellPadding="6">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Judul</th>
-              <th>Lokasi</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {events.map((ev) => (
-              <tr key={ev.id}>
-                <td>{ev.id}</td>
-                <td>{ev.title}</td>
-                <td>{ev.location}</td>
-                <td>{ev.start_time}</td>
-                <td>{ev.end_time}</td>
-                <td>
-                  <Link to={`/events/${ev.id}/edit`}>Edit</Link> <button onClick={() => handleDelete(ev.id)}>Hapus</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+        {/* hanya tampil kalau BUKAN guest */}
+        {!isGuest && (
+          <Link to="/events/new">
+            <button
+              style={{
+                padding: "8px 14px",
+                borderRadius: 999,
+                border: "none",
+                cursor: "pointer",
+                fontSize: 14,
+                fontWeight: 500,
+                backgroundColor: "#3b82f6",
+                color: "#f9fafb",
+              }}
+            >
+              + Create Event
+            </button>
+          </Link>
+        )}
+      </div>
+
+      {loading && <p>Memuat event...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {!loading && !error && events.length === 0 && <p>Belum ada event.</p>}
+
+      {events.map((ev) => {
+        const isFull = typeof ev.attendees_count === "number" && typeof ev.quota === "number" && ev.attendees_count >= ev.quota;
+
+        const remaining = typeof ev.attendees_count === "number" && typeof ev.quota === "number" ? ev.quota - ev.attendees_count : null;
+
+        return (
+          <div
+            key={ev.id}
+            className="event-card"
+            style={{
+              border: "1px solid #1f2937",
+              borderRadius: 12,
+              padding: 16,
+              marginTop: 12,
+            }}
+          >
+            <h2>{ev.title}</h2>
+            <p>{ev.description}</p>
+            <p>Date &amp; Time: {ev.start_time}</p>
+            <p>Location: {ev.location}</p>
+            <p>
+              Quota: {ev.attendees_count} / {ev.quota}{" "}
+              {ev.quota != null && (
+                <>
+                  {"("}
+                  {isFull ? "Full" : `${remaining} seats left`}
+                  {")"}
+                </>
+              )}
+            </p>
+
+            <Link to={`/events/${ev.id}`}>
+              <button className="btn btn-right">View Detail</button>
+            </Link>
+          </div>
+        );
+      })}
     </div>
   );
 }
